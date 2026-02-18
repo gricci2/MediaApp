@@ -10,6 +10,17 @@
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+
+<form>
+    <p>
+        <select asp-for="MediaType" asp-items="Model.Types">
+            <option value="">All</option>
+        </select>
+        <label>Title: <input type="text" asp-for="SearchString" /></label>
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -20,7 +31,7 @@
                 @Html.DisplayNameFor(model => model.MediaItem[0].Type)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.MediaItem[0].isCompleted)
+                @Html.DisplayNameFor(model => model.MediaItem[0].IsCompleted)
             </th>
             <th></th>
         </tr>
@@ -35,7 +46,7 @@
                 @Html.DisplayFor(modelItem => item.Type)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isCompleted)
+                @Html.DisplayFor(modelItem => item.IsCompleted)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

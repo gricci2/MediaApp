@@ -21,6 +21,9 @@ namespace MediaApp.Models
         [Required]
         public MediaType Type { get; set; }
 
-        public bool isCompleted { get; set; } = false;
+        [Display(Name = "Done?")]
+        public bool IsCompleted { get; set; } = false;
+
+        public string UserId { get; set; } = "default-user";
     }
 }

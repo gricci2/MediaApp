@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "{id:int?}"
 @model MediaApp.Pages.MediaItems.DeleteModel
 
 @{
@@ -25,10 +25,10 @@
             @Html.DisplayFor(model => model.MediaItem.Type)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MediaItem.isCompleted)
+            @Html.DisplayNameFor(model => model.MediaItem.IsCompleted)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MediaItem.isCompleted)
+            @Html.DisplayFor(model => model.MediaItem.IsCompleted)
         </dd>
     </dl>
     
