@@ -1,5 +1,6 @@
 ﻿using MediaApp.Data;
 using MediaApp.Models;
+using MediaApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;

@@ -17,7 +17,8 @@
             <option value="">All</option>
         </select>
         <label>Title: <input type="text" asp-for="SearchString" /></label>
-        <input type="submit" value="Filter" />
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a asp-page="./Index" class="btn btn-secondary">Reset</a>
     </p>
 </form>
 
@@ -33,6 +34,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.MediaItem[0].IsCompleted)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MediaItem[0].Information)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,6 +51,16 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsCompleted)
+            </td>
+            <td>
+                    @if (!string.IsNullOrEmpty(item.Information) && item.Information.StartsWith("http"))
+                    {
+                        <a href="@item.Information" target="_blank">@item.Information</a>
+                    }
+                    else
+                    {
+                        @item.Information
+                    }
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

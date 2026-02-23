@@ -24,6 +24,10 @@ namespace MediaApp.Models
         [Display(Name = "Done?")]
         public bool IsCompleted { get; set; } = false;
 
+
+        [Display(Name = "Extra Information")]
+        public string Information { get; set; } = "N/A";
+
         public string UserId { get; set; } = "default-user";
     }
 }
