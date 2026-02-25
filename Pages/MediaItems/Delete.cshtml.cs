@@ -12,11 +12,11 @@ namespace MediaApp.Pages.MediaItems
 {
     public class DeleteModel : PageModel
     {
-        private readonly MediaApp.Data.MediaItemDbContext _context;
+        private readonly MediaApp.Services.IMediaItemService _service;
 
-        public DeleteModel(MediaApp.Data.MediaItemDbContext context)
+        public DeleteModel(MediaApp.Services.IMediaItemService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [BindProperty]
@@ -29,15 +29,16 @@ namespace MediaApp.Pages.MediaItems
                 return NotFound();
             }
 
-            var mediaitem = await _context.MediaItems.FirstOrDefaultAsync(m => m.Id == id);
+            var userId = GetUserId();
 
-            if (mediaitem == null)
+            var mediaItem = await _service.GetByIdAsync(id.Value, userId);
+            if (mediaItem == null)
             {
                 return NotFound();
             }
             else
             {
-                MediaItem = mediaitem;
+                MediaItem = mediaItem;
             }
             return Page();
         }
@@ -49,15 +50,16 @@ namespace MediaApp.Pages.MediaItems
                 return NotFound();
             }
 
-            var mediaitem = await _context.MediaItems.FindAsync(id);
-            if (mediaitem != null)
-            {
-                MediaItem = mediaitem;
-                _context.MediaItems.Remove(MediaItem);
-                await _context.SaveChangesAsync();
-            }
+            var userId = GetUserId();
+
+            await _service.DeleteAsync(id.Value, userId);
 
             return RedirectToPage("./Index");
+        }
+
+        private string GetUserId()
+        {
+            return User?.Identity?.Name ?? "default-user";
         }
     }
 }

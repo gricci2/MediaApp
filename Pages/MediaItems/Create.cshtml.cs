@@ -12,11 +12,11 @@ namespace MediaApp.Pages.MediaItems
 {
     public class CreateModel : PageModel
     {
-        private readonly MediaApp.Data.MediaItemDbContext _context;
+        private readonly MediaApp.Services.IMediaItemService _service;
 
-        public CreateModel(MediaApp.Data.MediaItemDbContext context)
+        public CreateModel(MediaApp.Services.IMediaItemService service)
         {
-            _context = context;
+            _service = service;
         }
 
         public IActionResult OnGet()
@@ -35,8 +35,7 @@ namespace MediaApp.Pages.MediaItems
                 return Page();
             }
 
-            _context.MediaItems.Add(MediaItem);
-            await _context.SaveChangesAsync();
+            await _service.CreateAsync(MediaItem);
 
             return RedirectToPage("./Index");
         }

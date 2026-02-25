@@ -40,6 +40,22 @@ namespace MediaApp.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        //try
+        //    {
+        //        await _service.UpdateAsync(MediaItem);
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!MediaItemExists(MediaItem.Id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
         public async Task<bool> DeleteAsync(int id, string userId)
         {
             var existing = await _context.MediaItems.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);

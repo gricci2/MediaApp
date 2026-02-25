@@ -14,14 +14,14 @@ namespace MediaApp.Pages.MediaItems
 {
     public class IndexModel : PageModel
     {
-        private readonly MediaApp.Data.MediaItemDbContext _context;
+        private readonly MediaApp.Services.IMediaItemService _service;
 
-        public IndexModel(MediaApp.Data.MediaItemDbContext context)
+        public IndexModel(MediaApp.Services.IMediaItemService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        public IList<MediaItem> MediaItem { get;set; } = default!;
+        public IList<MediaItem> MediaItem { get;set; } = new List<MediaItem>();
 
         [BindProperty(SupportsGet = true)]
         public string? SearchString { get; set; }
@@ -33,26 +33,31 @@ namespace MediaApp.Pages.MediaItems
 
         public async Task OnGetAsync()
         {
-            //IQueryable<MediaType> typeQuery = from m in _context.MediaItems
-            //                               orderby m.Type
-            //                               select m.Type;
+            var userId = GetUserId();
 
-            var mediaitems = from m in _context.MediaItems
-                         select m;
+            var mediaItems = await _service.GetAllAsync(userId);
+
+            var filtered = mediaItems.AsEnumerable();
+
             if (!string.IsNullOrEmpty(SearchString))
             {
-                mediaitems = mediaitems.Where(s => s.Title.Contains(SearchString));
+                filtered = filtered.Where(s => s.Title.Contains(SearchString, StringComparison.OrdinalIgnoreCase));
             }
 
             if (MediaType.HasValue)
             {
-                mediaitems = mediaitems.Where(x => x.Type == MediaType.Value);
+                filtered = filtered.Where(x => x.Type == MediaType.Value);
             }
 
             //Types = new SelectList(await typeQuery.Distinct().ToListAsync());
             Types = new SelectList(Enum.GetValues<MediaType>());
 
-            MediaItem = await mediaitems.ToListAsync();
+            MediaItem = filtered.ToList();
+        }
+
+        private string GetUserId()
+        {
+            return User?.Identity?.Name ?? "default-user";
         }
     }
 }

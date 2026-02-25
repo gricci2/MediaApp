@@ -13,11 +13,11 @@ namespace MediaApp.Pages.MediaItems
 {
     public class EditModel : PageModel
     {
-        private readonly MediaApp.Data.MediaItemDbContext _context;
+        private readonly MediaApp.Services.IMediaItemService _service;
 
-        public EditModel(MediaApp.Data.MediaItemDbContext context)
+        public EditModel(MediaApp.Services.IMediaItemService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [BindProperty]
@@ -30,12 +30,17 @@ namespace MediaApp.Pages.MediaItems
                 return NotFound();
             }
 
-            var mediaitem =  await _context.MediaItems.FirstOrDefaultAsync(m => m.Id == id);
-            if (mediaitem == null)
+            var userId = GetUserId();
+
+            var mediaItem = await _service.GetByIdAsync(id.Value, userId);
+            if (mediaItem == null)
             {
                 return NotFound();
             }
-            MediaItem = mediaitem;
+            else
+            {
+                MediaItem = mediaItem;
+            }
             return Page();
         }
 
@@ -48,30 +53,21 @@ namespace MediaApp.Pages.MediaItems
                 return Page();
             }
 
-            _context.Attach(MediaItem).State = EntityState.Modified;
+            var userId = GetUserId();
 
-            try
+            bool updated = await _service.UpdateAsync(MediaItem);
+
+            if(!updated)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MediaItemExists(MediaItem.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return RedirectToPage("./Index");
         }
 
-        private bool MediaItemExists(int id)
+        private string GetUserId()
         {
-            return _context.MediaItems.Any(e => e.Id == id);
+            return User?.Identity?.Name ?? "default-user";
         }
     }
 }

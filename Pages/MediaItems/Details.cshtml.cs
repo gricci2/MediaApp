@@ -12,11 +12,11 @@ namespace MediaApp.Pages.MediaItems
 {
     public class DetailsModel : PageModel
     {
-        private readonly MediaApp.Data.MediaItemDbContext _context;
+        private readonly MediaApp.Services.IMediaItemService _service;
 
-        public DetailsModel(MediaApp.Data.MediaItemDbContext context)
+        public DetailsModel(MediaApp.Services.IMediaItemService service)
         {
-            _context = context;
+            _service = service;
         }
 
         public MediaItem MediaItem { get; set; } = default!;
@@ -28,16 +28,23 @@ namespace MediaApp.Pages.MediaItems
                 return NotFound();
             }
 
-            var mediaitem = await _context.MediaItems.FirstOrDefaultAsync(m => m.Id == id);
-            if (mediaitem == null)
+            var userId = GetUserId();
+
+            var mediaItem = await _service.GetByIdAsync(id.Value, userId);
+            if (mediaItem == null)
             {
                 return NotFound();
             }
             else
             {
-                MediaItem = mediaitem;
+                MediaItem = mediaItem;
             }
             return Page();
+        }
+
+        private string GetUserId()
+        {
+            return User?.Identity?.Name ?? "default-user";
         }
     }
 }
