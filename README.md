@@ -31,6 +31,11 @@ My goals of
 
 1. Started with a Minimal API and EF Core for database support to track media items
 
+- minimal api
+- implemented EF Core to use a local SQL Server
+- created Razor Pages to build a clean and simple frontend
+- created a MediaItem Service in order to separate the backend logic of the database with the frontend
+
 
 ---
 
