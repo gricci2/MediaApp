@@ -34,7 +34,7 @@ namespace MediaApp.Services
                 Information = item.Information
             }).FirstOrDefaultAsync();
         }
-        public async Task<MediaItemReadDto> CreateAsync(MediaItemCreateDto mediaItem)
+        public async Task<MediaItemReadDto> CreateAsync(MediaItemCreateDto mediaItem, string userId)
         {
             var mediaItemDto = new MediaItem
             {
@@ -42,6 +42,7 @@ namespace MediaApp.Services
                 Type = mediaItem.Type,
                 IsCompleted = mediaItem.IsCompleted,
                 Information = mediaItem.Information,
+                UserId = userId
             };
 
             _context.MediaItems.Add(mediaItemDto);

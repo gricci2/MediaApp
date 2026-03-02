@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaApp.Data;
 using MediaApp.Models;
 using MediaApp.DTOs;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace MediaApp.Pages.MediaItems
 {
@@ -36,9 +37,16 @@ namespace MediaApp.Pages.MediaItems
                 return Page();
             }
 
-            await _service.CreateAsync(MediaItem);
+            var userId = GetUserId();
+
+            await _service.CreateAsync(MediaItem, userId);
 
             return RedirectToPage("./Index");
+        }
+
+        private string GetUserId()
+        {
+            return User?.Identity?.Name ?? "default-user";
         }
     }
 }
