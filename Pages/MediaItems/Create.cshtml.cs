@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MediaApp.Data;
 using MediaApp.Models;
+using MediaApp.DTOs;
 
 namespace MediaApp.Pages.MediaItems
 {
@@ -25,7 +26,7 @@ namespace MediaApp.Pages.MediaItems
         }
 
         [BindProperty]
-        public MediaItem MediaItem { get; set; } = default!;
+        public MediaItemCreateDto MediaItem { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()

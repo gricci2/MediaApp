@@ -16,6 +16,6 @@ namespace MediaApp.DTOs
 
         public bool IsCompleted { get; set; }
 
-        public string Information { get; set; }
+        public string? Information { get; set; }
     }
 }

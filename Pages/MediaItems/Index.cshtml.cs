@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaApp.DTOs;
 
 namespace MediaApp.Pages.MediaItems
 {
@@ -21,7 +22,7 @@ namespace MediaApp.Pages.MediaItems
             _service = service;
         }
 
-        public IList<MediaItem> MediaItem { get;set; } = new List<MediaItem>();
+        public IList<MediaItemReadDto> MediaItem { get;set; } = new List<MediaItemReadDto>();
 
         [BindProperty(SupportsGet = true)]
         public string? SearchString { get; set; }
@@ -46,7 +47,7 @@ namespace MediaApp.Pages.MediaItems
 
             if (MediaType.HasValue)
             {
-                filtered = filtered.Where(x => x.Type == MediaType.Value);
+                filtered = filtered.Where(x => x.Type == MediaType.Value.ToString());
             }
 
             //Types = new SelectList(await typeQuery.Distinct().ToListAsync());

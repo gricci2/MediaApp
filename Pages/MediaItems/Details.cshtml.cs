@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MediaApp.Data;
 using MediaApp.Models;
+using MediaApp.DTOs;
 
 namespace MediaApp.Pages.MediaItems
 {
@@ -19,7 +20,7 @@ namespace MediaApp.Pages.MediaItems
             _service = service;
         }
 
-        public MediaItem MediaItem { get; set; } = default!;
+        public MediaItemReadDto MediaItem { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {

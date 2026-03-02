@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MediaApp.Data;
 using MediaApp.Models;
+using MediaApp.DTOs;
 
 namespace MediaApp.Pages.MediaItems
 {
@@ -21,7 +22,7 @@ namespace MediaApp.Pages.MediaItems
         }
 
         [BindProperty]
-        public MediaItem MediaItem { get; set; } = default!;
+        public MediaItemUpdateDto MediaItem { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -39,7 +40,14 @@ namespace MediaApp.Pages.MediaItems
             }
             else
             {
-                MediaItem = mediaItem;
+                MediaItem = new MediaItemUpdateDto
+                {
+                    Id = mediaItem.Id,
+                    Title = mediaItem.Title,
+                    Type = Enum.Parse<MediaType>(mediaItem.Type),
+                    Information = mediaItem.Information,
+                    IsCompleted = mediaItem.IsCompleted
+                };
             }
             return Page();
         }
@@ -55,7 +63,7 @@ namespace MediaApp.Pages.MediaItems
 
             var userId = GetUserId();
 
-            bool updated = await _service.UpdateAsync(MediaItem);
+            bool updated = await _service.UpdateAsync(MediaItem, userId);
 
             if(!updated)
             {
