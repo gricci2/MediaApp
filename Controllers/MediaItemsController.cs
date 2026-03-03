@@ -12,8 +12,6 @@ namespace MediaApp.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-
-    
     public class MediaItemsController : ControllerBase
     {
         private readonly IMediaItemService _service;
