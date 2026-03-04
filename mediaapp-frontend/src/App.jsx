@@ -64,6 +64,7 @@ function App() {
 
     const [token, setToken] = useState(localStorage.getItem("token") || "");
     const [mediaItems, setMediaItems] = useState([]);
+    const [editingItem, setEditingItem] = useState(null);
 
     const sortBy = (column) => {
         const asc = sortColumn === column ? !sortAsc : true;
@@ -115,7 +116,22 @@ function App() {
         fetchData();
     }, [token]);
 
-    
+    const handleDelete = async (item) => {
+        const confirmDelete = window.confirm(`Are you sure you want to delete "${item.title}"?`);
+        if (!confirmDelete) return;
+
+        try {
+            await axios.delete(`https://localhost:7102/api/MediaItems/${item.id}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            // Remove deleted item from local state
+            setMediaItems((prev) => prev.filter((i) => i.id !== item.id));
+        } catch (err) {
+            console.error("Failed to delete item:", err);
+            alert("Failed to delete this item. Please try again.");
+        }
+    };
 
     if (!token) return <Login onLogin={setToken} />;
 
@@ -154,7 +170,7 @@ function App() {
 
             <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
-                {/* Top row: Form, Table + Logout */}
+                {/* Top row: Form + Logout, Table */}
                 <div style={{
                     display: "flex",
                     alignItems: "flex-start",
@@ -162,23 +178,29 @@ function App() {
                     marginTop: 0
                 }}>
 
-                    {/* Left: CreateMediaItem form */}
-                    <div style={{
-                        backgroundColor: "#1e293b",
-                        borderRadius: "12px",
-                        padding: "24px",
-                        boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
-                        minWidth: "320px",
-                        maxWidth: "420px"
-                    }}>
-                        <h1 style={{ margin: "0 0 10px 0" }}>Media Tracker</h1>
-                        <CreateMediaItem token={token} onCreated={fetchMediaItems} />
-                    </div>
+                    {/* Left column: form + logout stacked vertically */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-                    {/* Right side: Table + Logout */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: "2", minWidth: "400px" }}>
-                        {/* Logout button top-right */}
-                        <div style={{ alignSelf: "flex-end" }}>
+                        {/* Form box */}
+                        <div style={{
+                            backgroundColor: "#1e293b",
+                            borderRadius: "12px",
+                            padding: "24px",
+                            boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+                            minWidth: "320px",
+                            maxWidth: "420px"
+                        }}>
+                            <h1 style={{ margin: "0 0 10px 0" }}>Media Tracker</h1>
+                            <CreateMediaItem
+                                token={token}
+                                onCreated={fetchMediaItems}
+                                editingItem={editingItem}
+                                clearEditing={() => setEditingItem(null)}
+                            />
+                        </div>
+
+                        {/* Logout button outside the form box, stacked below */}
+                        <div>
                             <button
                                 onClick={handleLogout}
                                 style={{
@@ -197,32 +219,33 @@ function App() {
                             </button>
                         </div>
 
+                    </div>
+                   
+                    {/* Right side: Table */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: "2", minWidth: "400px" }}>
                         {/* Media Items Table */}
                         <div style={{
                             backgroundColor: "#1e293b",
                             borderRadius: "12px",
                             padding: "24px",
-                            boxShadow: "0 8px 20px rgba(0,0,0,0.25)"
+                            boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+                            minWidth: "900px",
+                            overflowX: "auto" // 🔹 adds scroll if table is too wide
                         }}>
                             <h2 style={{ marginTop: 0, marginBottom: "10px" }}>My Media Items</h2>
-                            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                            <table style={{
+                                width: "100%",
+                                borderCollapse: "collapse",
+                                tableLayout: "fixed",
+                                boxSizing: "border-box"
+                            }}>
                                 <thead>
                                     <tr>
-                                        {["title", "type", "isCompleted", "information"].map((col) => (
-                                            <th
-                                                key={col}
-                                                style={{
-                                                    ...thStyle,
-                                                    backgroundColor: sortColumn === col ? "#3a3a3a" : "#2c2c2c"
-                                                }}
-                                                onClick={() => sortBy(col)}
-                                            >
-                                                {col === "title" ? "Title" :
-                                                    col === "type" ? "Type" :
-                                                        col === "isCompleted" ? "Status" : "Information"}{" "}
-                                                {sortColumn === col ? (sortAsc ? "▲" : "▼") : ""}
-                                            </th>
-                                        ))}
+                                        <th style={{ ...thStyle, width: "20%" }} onClick={() => sortBy("title")}>Title {sortColumn === "title" ? (sortAsc ? "▲" : "▼") : ""}</th>
+                                        <th style={{ ...thStyle, width: "10%" }} onClick={() => sortBy("type")}>Type {sortColumn === "type" ? (sortAsc ? "▲" : "▼") : ""}</th>
+                                        <th style={{ ...thStyle, width: "10%", textAlign: "center" }} onClick={() => sortBy("isCompleted")}>Status {sortColumn === "isCompleted" ? (sortAsc ? "▲" : "▼") : ""}</th>
+                                        <th style={{ ...thStyle, width: "40%" }} onClick={() => sortBy("information")}>Information {sortColumn === "information" ? (sortAsc ? "▲" : "▼") : ""}</th>
+                                        <th style={{ ...thStyle, width: "20%", textAlign: "center" }}>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -233,10 +256,59 @@ function App() {
                                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#333"}
                                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
                                         >
-                                            <td style={tdStyle}>{item.title}</td>
-                                            <td style={tdStyle}>{item.type}</td>
-                                            <td style={tdStyle}>{item.isCompleted ? "Completed" : "In Progress"}</td>
-                                            <td style={tdStyle}>{renderInformation(item.information)}</td>
+                                            <td style={{ ...tdStyle, width: "20%" }}>{item.title}</td>
+                                            <td style={{ ...tdStyle, width: "10%" }}>{item.type}</td>
+                                            <td style={{ ...tdStyle, width: "10%", textAlign: "center" }}>
+                                                {item.isCompleted ? "Completed" : "In Progress"}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    ...tdStyle,
+                                                    width: "40%",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                }}
+                                            >
+                                                {renderInformation(item.information)}
+                                            </td>
+                                            <td style={{ width: "20%", padding: 0 }}>
+                                                <div style={{
+                                                    display: "flex",
+                                                    justifyContent: "center", // horizontally center buttons
+                                                    gap: "6px"
+                                                }}>
+                                                {/* Edit button */}
+                                                <button
+                                                    onClick={() => setEditingItem(item)}
+                                                    style={{
+                                                        backgroundColor: "#f59e0b",
+                                                        color: "white",
+                                                        border: "none",
+                                                        padding: "6px 10px",
+                                                        borderRadius: "6px",
+                                                        cursor: "pointer"
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+
+                                                {/* Delete button */}
+                                                <button
+                                                    onClick={() => handleDelete(item)}
+                                                    style={{
+                                                        backgroundColor: "#ef4444", // red
+                                                        color: "white",
+                                                        border: "none",
+                                                        padding: "6px 10px",
+                                                        borderRadius: "6px",
+                                                        cursor: "pointer"
+                                                    }}
+                                                >
+                                                    Delete
+                                                    </button>
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

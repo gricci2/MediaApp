@@ -1,39 +1,116 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function CreateMediaItem({ token, onCreated }) {
+export default function CreateMediaItem({
+    token,
+    onCreated,
+    editingItem,
+    clearEditing
+}) {
     const [title, setTitle] = useState("");
-    const [type, setType] = useState("Movie");
+    const [type, setType] = useState("");
+    const [mediaTypes, setMediaTypes] = useState([]);
     const [information, setInformation] = useState("");
     const [isCompleted, setIsCompleted] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchMediaTypes = async () => {
+            try {
+                const response = await axios.get(
+                    "https://localhost:7102/api/MediaItems/types",
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+
+                setMediaTypes(response.data);
+
+                // Set default selected type to first enum value
+                if (response.data.length > 0) {
+                    setType(response.data[0]);
+                }
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load media types");
+            }
+        };
+
+        fetchMediaTypes();
+    }, [token]);
+
+    useEffect(() => {
+        if (editingItem) {
+            // Batch all updates inside requestAnimationFrame to avoid cascading render warning
+            requestAnimationFrame(() => {
+                setTitle(editingItem.title);
+                setType(editingItem.type);
+                setInformation(editingItem.information || "");
+                setIsCompleted(editingItem.isCompleted);
+            });
+        }
+    }, [editingItem]);
+
+    useEffect(() => {
+        if (!editingItem && mediaTypes.length > 0) {
+            requestAnimationFrame(() => {
+                setTitle("");
+                setType(mediaTypes[0]);
+                setInformation("");
+                setIsCompleted(false);
+            });
+        }
+    }, [editingItem, mediaTypes]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            await axios.post(
-                "https://localhost:7102/api/MediaItems",
-                {
-                    title,
-                    type,
-                    information,
-                    isCompleted,
-                },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
+            if (editingItem) {
+                // 🔥 UPDATE (PUT)
+                await axios.put(
+                    `https://localhost:7102/api/MediaItems/${editingItem.id}`,
+                    {
+                        Id: editingItem.id,
+                        Title: title,
+                        Type: type,
+                        Information: information,
+                        IsCompleted: isCompleted
+                    },
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
 
+                clearEditing();
+            } else {
+                // 🔥 CREATE (POST)
+                await axios.post(
+                    "https://localhost:7102/api/MediaItems",
+                    {
+                        title,
+                        type,
+                        information,
+                        isCompleted,
+                    },
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+            }
+
+            // Reset form
             setTitle("");
-            setType("Movie");
+            setType(mediaTypes[0] || "");
             setInformation("");
             setIsCompleted(false);
 
             if (onCreated) onCreated();
+
         } catch (err) {
             console.error(err);
-            setError("Failed to create media item");
+            setError("Failed to save media item");
         }
     };
 
@@ -78,10 +155,13 @@ export default function CreateMediaItem({ token, onCreated }) {
                         value={type}
                         onChange={(e) => setType(e.target.value)}
                         style={inputStyle}
+                        required
                     >
-                        <option value="Movie">Movie</option>
-                        <option value="Series">Series</option>
-                        <option value="Book">Book</option>
+                        {mediaTypes.map((mt) => (
+                            <option key={mt} value={mt}>
+                                {mt}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
@@ -126,8 +206,32 @@ export default function CreateMediaItem({ token, onCreated }) {
                     onMouseEnter={(e) => e.target.style.backgroundColor = "#2563eb"}
                     onMouseLeave={(e) => e.target.style.backgroundColor = "#3b82f6"}
                     >
-                    Create
+                    {editingItem ? "Update" : "Create"}
                 </button>
+                {editingItem && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            clearEditing();
+                            setTitle("");
+                            setType(mediaTypes[0] || "");
+                            setInformation("");
+                            setIsCompleted(false);
+                        }}
+                        style={{
+                            marginTop: "10px",
+                            width: "100%",
+                            padding: "10px",
+                            borderRadius: "8px",
+                            border: "1px solid #ccc",
+                            backgroundColor: "#1e293b",
+                            color: "white",
+                            cursor: "pointer"
+                        }}
+                    >
+                        Cancel Edit
+                    </button>
+                )}
             </form>
 
             {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}

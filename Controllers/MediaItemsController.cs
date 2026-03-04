@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using MediaApp.Services;
 using MediaApp.DTOs;
+using MediaApp.Models;
 
 
 
@@ -57,7 +58,7 @@ namespace MediaApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(MediaItemCreateDto dto)
+        public async Task<ActionResult> Create([FromBody] MediaItemCreateDto dto)
         {
             var userId = GetUserId();
             await _service.CreateAsync(dto, userId);
@@ -65,7 +66,7 @@ namespace MediaApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, MediaItemUpdateDto dto)
+        public async Task<ActionResult> Update(int id, [FromBody] MediaItemUpdateDto dto)
         {
             if(id != dto.Id)
             {
@@ -92,6 +93,13 @@ namespace MediaApp.Controllers
                 return NotFound();
             }
             return NoContent();
+        }
+
+        [HttpGet("types")]
+        public IActionResult GetMediaTypes()
+        {
+            var types = Enum.GetNames(typeof(MediaType));
+            return Ok(types);
         }
     }
 }
