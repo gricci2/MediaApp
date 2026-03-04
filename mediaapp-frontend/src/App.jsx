@@ -65,6 +65,7 @@ function App() {
     const [token, setToken] = useState(localStorage.getItem("token") || "");
     const [mediaItems, setMediaItems] = useState([]);
     const [editingItem, setEditingItem] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const sortBy = (column) => {
         const asc = sortColumn === column ? !sortAsc : true;
@@ -133,6 +134,14 @@ function App() {
         }
     };
 
+    const filteredItems = mediaItems.filter((item) => {
+        const search = searchTerm.toLowerCase();
+        return (
+            item.title.toLowerCase().includes(search) ||
+            item.type.toLowerCase().includes(search) ||
+            (item.information && item.information.toLowerCase().includes(search))
+        );
+    });
     if (!token) return <Login onLogin={setToken} />;
 
     const renderInformation = (info) => {
@@ -230,9 +239,35 @@ function App() {
                             padding: "24px",
                             boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
                             minWidth: "900px",
-                            overflowX: "auto" // 🔹 adds scroll if table is too wide
+                            overflowX: "auto"
                         }}>
-                            <h2 style={{ marginTop: 0, marginBottom: "10px" }}>My Media Items</h2>
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: "16px"
+                            }}>
+                                <h2 style={{ margin: 0 }}>My Media Items</h2>
+
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    onFocus={(e) => e.target.style.border = "1px solid #3b82f6"}
+                                    onBlur={(e) => e.target.style.border = "1px solid #334155"}
+                                    style={{
+                                        padding: "8px 12px",
+                                        borderRadius: "8px",
+                                        border: "1px solid #334155",
+                                        backgroundColor: "#0f172a",
+                                        color: "#e2e8f0",
+                                        width: "250px",
+                                        outline: "none",
+                                        transition: "border 0.2s"
+                                    }}
+                                />
+                            </div>
                             <table style={{
                                 width: "100%",
                                 borderCollapse: "collapse",
@@ -249,7 +284,7 @@ function App() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {mediaItems.map((item) => (
+                                    {filteredItems.map((item) => (
                                         <tr
                                             key={item.id}
                                             style={trStyle}
