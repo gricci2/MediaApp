@@ -22,7 +22,10 @@ namespace MediaApp.Controllers
         }
         private string GetUserId()
         {
-            return User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            return userId;
         }
 
         [HttpGet]

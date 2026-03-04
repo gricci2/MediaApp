@@ -15,7 +15,7 @@ namespace MediaApp.Services
         }
         public async Task<IEnumerable<MediaItemReadDto>> GetAllAsync(string userId)
         {
-            return await _context.MediaItems.Where(m => m.UserId == userId).Select(item => new MediaItemReadDto { 
+            return await _context.MediaItems/*.Where(m => m.UserId == userId)*/.Select(item => new MediaItemReadDto { 
             Id = item.Id,
             Title = item.Title,
             Type = item.Type.ToString(),

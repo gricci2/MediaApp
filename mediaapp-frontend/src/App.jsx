@@ -34,34 +34,46 @@
 
 //export default App
 
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Login from "./Login";
 
 function App() {
-    const [items, setItems] = useState([])
+    const [token, setToken] = useState(localStorage.getItem("token") || "");
+    const [mediaItems, setMediaItems] = useState([]);
 
     useEffect(() => {
-        fetch("https://localhost:7102/api/MediaItems")
-            .then(res => res.json())
-            .then(data => {
-                console.log("API response:", data)
-                setItems(data)
+        if (!token) return; // don't fetch if not logged in
+
+        axios
+            .get("https://localhost:7102/api/MediaItems", {
+                headers: { Authorization: `Bearer ${token}` },
             })
-            .catch(err => console.error("Error:", err))
-    }, [])
+            .then((res) => setMediaItems(res.data))
+            .catch((err) => console.error(err));
+    }, [token]);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        setToken("");
+        setMediaItems([]);
+    };
+
+    if (!token) return <Login onLogin={setToken} />;
 
     return (
         <div>
             <h1>Media Tracker</h1>
-
+            <button onClick={handleLogout}>Logout</button>
             <ul>
-                {items.map(item => (
+                {mediaItems.map((item) => (
                     <li key={item.id}>
-                        {item.title} - {item.type}
+                        {item.title} ({item.type}) - {item.isCompleted ? "Completed" : "In Progress"}
                     </li>
                 ))}
             </ul>
         </div>
-    )
+    );
 }
 
-export default App
+export default App;
