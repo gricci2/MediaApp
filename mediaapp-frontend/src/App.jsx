@@ -134,6 +134,11 @@ function App() {
         }
     };
 
+    const handleDiscover = (item) => {
+        const query = encodeURIComponent(`Similar to ${item.title} ${item.type}`);
+        window.open(`https://www.google.com/search?q=${query}`, "_blank");
+    };
+
     const filteredItems = mediaItems.filter((item) => {
         const search = searchTerm.toLowerCase();
         return (
@@ -341,6 +346,20 @@ function App() {
                                                     }}
                                                 >
                                                     Delete
+                                                    </button>
+                                                    {/* Discover button */}
+                                                    <button
+                                                        onClick={() => handleDiscover(item)}
+                                                        style={{
+                                                            backgroundColor: "#10b981",
+                                                            color: "white",
+                                                            border: "none",
+                                                            padding: "6px 10px",
+                                                            borderRadius: "6px",
+                                                            cursor: "pointer"
+                                                        }}
+                                                    >
+                                                        Discover
                                                     </button>
                                                 </div>
                                             </td>
