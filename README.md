@@ -1,6 +1,4 @@
-Reading and Media List
-
-# 📚 My Media Tracker 📺
+# 📚 My Book/Media Tracker 📺
 
 ---
 
@@ -11,31 +9,31 @@ This project is a simple **Media Tracker** application. It was created in Visual
 ---
 ## 🎯 Goals
 
-My goals of 
+My goals of this project were to:
 
+- Create a tracking system for books I've read and want to read
 - Learn how to structure a full-stack ASP.NET app
 - Implement database tracking with EF Core
-- Progressively scale from minimal API to a front-end + back-end architecture
+- Progressively scale from minimal API to a front-end + back-end architecture and learn the tradeoffs of decisions made along the way
 
 ---
 
 ## ✨ Features
 
-- 📝 Add, edit, and delete media items
-- 🔍 Search and filter by category and name
-- 📊 
-- 🌐 
+- 📝 Add, edit, sort, and delete media items
+- 🔍 Search and filter by type and name
+- 📊 Login as a user with a password
+- 🌐 Use a discover feature to find similar media to those on my list
 
 ---
-## 📈 Progression/Development Journey + Decisions/Tradeoffs
+## 📈 Progression of the Project + Decisions Made
 
-1. Started with a Minimal API and EF Core for database support to track media items
-
-- minimal api
-- implemented EF Core to use a local SQL Server
-- created Razor Pages to build a clean and simple frontend
-- created a MediaItem Service in order to separate the backend logic of the database with the frontend
-
-
+1. Started with a Minimal API and EF Core
+2. Used local SQL Server for database support to track media items
+3. Implemented Razor Pages for faster setup and easier debugging initially
+4. Implemented DTOs to prevent data exposure and make changes to database schema easier
+5. Created a Service layer so that the back-end logic was separated and could be reused and tested easier
+6. Added Controllers so that I could use my backend with a separate front end (React in this case)
+7. Added Authentication to enable user-specific data and for possible scalability
 ---
 
