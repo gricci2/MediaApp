@@ -2,11 +2,11 @@
 
 ## 📌 About
 
-This project is a simple **Media Tracker** application. It was created in Visual Studio using C# along with ASP.NET and Entity Framework.
+This project is a simple **Media Tracker** application. It was created in Visual Studio using C# along with ASP.NET and Entity Framework. It currently uses React.
 
-<img width="2152" height="1392" alt="Screenshot 2026-03-05 111014" src="https://github.com/user-attachments/assets/f6534a9f-9055-423a-9b45-04e0826d78aa" />
+<img src="https://github.com/user-attachments/assets/f6534a9f-9055-423a-9b45-04e0826d78aa" width="500">
 
-<img width="2149" height="1392" alt="Screenshot 2026-03-05 105132" src="https://github.com/user-attachments/assets/57b23768-246e-4f1d-8d4f-cb52f336dacd" />
+<img src="https://github.com/user-attachments/assets/57b23768-246e-4f1d-8d4f-cb52f336dacd" width="500">
 
 ## 🎯 Goals
 
