@@ -4,6 +4,8 @@
 
 This project is a simple **Media Tracker** application. It was created in Visual Studio using C# along with ASP.NET and Entity Framework.
 
+<img width="2149" height="1392" alt="Screenshot 2026-03-05 105132" src="https://github.com/user-attachments/assets/57b23768-246e-4f1d-8d4f-cb52f336dacd" />
+
 ## 🎯 Goals
 
 My goals of this project were to:
